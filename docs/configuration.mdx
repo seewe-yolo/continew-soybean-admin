@@ -122,6 +122,8 @@ continew-starter.refresh-token:
 
 `cookie-path` 必须覆盖前端代理路径（如 `/dev-api`），否则浏览器刷新请求不会携带 Cookie，配置为 `/` 是最稳妥的选择。prod 环境中 `cookie-secure` 覆盖为 `true`，`cookie-name` 改为带 `__Host-` 前缀的 `__Host-refresh_token`。
 
+本仓库的 dev 配置已允许 `http://localhost:5173`、`http://localhost:5777` 和 Soybean 前端的 `http://localhost:9527` 使用刷新 Cookie。修改前端端口或访问域名时，同步更新 `cookie-allowed-origins` 并重新加载后端配置。该白名单不继承通用 CORS 的 `*`；prod 使用实际部署的前端 Origin。
+
 <Callout type="warn">
 经 Nginx 或网关部署时，必须显式配置 `trusted-proxy-addresses`，否则所有用户共享网关这一个 IP 的限流桶，`ip-rate-limit`（默认 60 次/分钟）会变成全站共享，`/auth/refresh` 匿名接口容易被填满导致全站 429。
 </Callout>

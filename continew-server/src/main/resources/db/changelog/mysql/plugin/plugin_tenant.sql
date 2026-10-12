@@ -126,9 +126,9 @@ ALTER TABLE `sys_app`
 INSERT INTO `sys_menu`
 (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`)
 VALUES
-(3000, '租户管理', 0, 1, '/tenant', 'Tenant', 'Layout', '/tenant/management', 'user-group', b'0', b'0', b'0', NULL, 6, 1, 1, NOW()),
+(3000, '租户管理', 0, 1, '/tenant', 'Tenant', 'Layout', '/tenant/management', 'mdi:account-group-outline', b'0', b'0', b'0', NULL, 6, 1, 1, NOW()),
 
-(3010, '租户管理', 3000, 2, '/tenant/management', 'TenantManagement', 'tenant/management/index', NULL, 'user-group', b'0', b'0', b'0', NULL, 1, 1, 1, NOW()),
+(3010, '租户管理', 3000, 2, '/tenant/management', 'TenantManagement', 'tenant/management/index', NULL, 'mdi:account-group-outline', b'0', b'0', b'0', NULL, 1, 1, 1, NOW()),
 (3011, '列表', 3010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:management:list', 1, 1, 1, NOW()),
 (3012, '详情', 3010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:management:get', 2, 1, 1, NOW()),
 (3013, '新增', 3010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:management:create', 3, 1, 1, NOW()),
@@ -136,7 +136,7 @@ VALUES
 (3015, '删除', 3010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:management:delete', 5, 1, 1, NOW()),
 (3016, '修改租户管理员密码', 3010, 3, NULL, NULL, NULL, NULL, NULL, b'0', b'0', b'0', 'tenant:management:updateAdminUserPwd', 6, 1, 1, NOW()),
 
-(3020, '套餐管理', 3000, 2, '/tenant/package', 'TenantPackage', 'tenant/package/index', NULL, 'project', b'0', b'0', b'0', NULL, 2, 1, 1, NOW()),
+(3020, '套餐管理', 3000, 2, '/tenant/package', 'TenantPackage', 'tenant/package/index', NULL, 'mdi:package-variant-closed', b'0', b'0', b'0', NULL, 2, 1, 1, NOW()),
 (3021, '列表', 3020, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:package:list', 1, 1, 1, NOW()),
 (3022, '详情', 3020, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:package:get', 2, 1, 1, NOW()),
 (3023, '新增', 3020, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:package:create', 3, 1, 1, NOW()),
