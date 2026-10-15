@@ -57,12 +57,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OptionServiceImpl implements OptionService {
 
+    private static final String MINI_PROGRAM_APP_SECRET = "MINI_PROGRAM_APP_SECRET";
+
     private final OptionMapper baseMapper;
 
     @Override
     public List<OptionResp> list(OptionQuery query) {
-        return BeanUtil.copyToList(baseMapper.selectList(QueryWrapperHelper.build(query)),
-            OptionResp.class);
+        List<OptionResp> options = BeanUtil.copyToList(
+            baseMapper.selectList(QueryWrapperHelper.build(query)), OptionResp.class);
+        options.stream()
+            .filter(option -> MINI_PROGRAM_APP_SECRET.equals(option.getCode()))
+            .forEach(option -> option.setValue(null));
+        return options;
     }
 
     @Override
@@ -89,6 +95,9 @@ public class OptionServiceImpl implements OptionService {
             ValidationUtils.throwIfNull(option, "参数 [{}] 不存在", req.getCode());
             if (StrUtil.isNotBlank(option.getDefaultValue())) {
                 ValidationUtils.throwIfBlank(req.getValue(), "参数 [{}] 的值不能为空", option.getName());
+            }
+            if (MINI_PROGRAM_APP_SECRET.equals(req.getCode()) && StrUtil.isBlank(req.getValue())) {
+                req.setValue(option.getValue());
             }
         }
         // 校验密码策略参数取值范围

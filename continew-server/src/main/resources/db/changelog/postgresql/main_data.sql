@@ -240,3 +240,33 @@ VALUES
 -- changeset luoqiz:2
 -- comment 清理已重编号下线的旧菜单（2020-2023）残留的角色菜单关联
 DELETE FROM "sys_role_menu" WHERE "menu_id" IN (2020, 2021, 2022, 2023);
+
+-- changeset seewe-yolo:mini-program-login dbms:postgresql
+-- comment 微信小程序手机号授权登录配置和默认归属
+INSERT INTO "sys_dept"
+("id", "name", "parent_id", "ancestors", "description", "sort", "status", "is_system", "create_user", "create_time")
+SELECT 547888897925840929, '外部部门', 1, '0,1', '小程序注册用户归属部门', 999, 1, false, 1, NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM "sys_dept" WHERE "name" = '外部部门' AND "parent_id" = 1 AND "deleted" = 0
+);
+
+INSERT INTO "sys_role"
+("id", "name", "code", "data_scope", "description", "sort", "is_system", "create_user", "create_time")
+SELECT 547888897925840930, '小程序用户', 'mini_program_user', 4, '小程序自动注册用户，仅本人数据权限', 5, false, 1, NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM "sys_role" WHERE "code" = 'mini_program_user' AND "deleted" = 0
+);
+
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840931, 'LOGIN', '微信小程序 AppID', 'MINI_PROGRAM_APP_ID', NULL, NULL,
+    '微信小程序 AppID，用于手机号授权登录'
+WHERE NOT EXISTS (
+    SELECT 1 FROM "sys_option" WHERE "code" = 'MINI_PROGRAM_APP_ID'
+);
+
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840932, 'LOGIN', '微信小程序 AppSecret', 'MINI_PROGRAM_APP_SECRET', NULL, NULL,
+    '微信小程序 AppSecret；接口不回显已保存密钥，留空保存不修改，重置登录配置会清空'
+WHERE NOT EXISTS (
+    SELECT 1 FROM "sys_option" WHERE "code" = 'MINI_PROGRAM_APP_SECRET'
+);

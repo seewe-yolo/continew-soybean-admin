@@ -52,7 +52,12 @@ public enum RoleCodeEnum {
     /**
      * 普通用户
      */
-    GENERAL_USER("general", "普通用户");
+    GENERAL_USER("general", "普通用户"),
+
+    /**
+     * 微信小程序用户
+     */
+    MINI_PROGRAM_USER("mini_program_user", "小程序用户");
 
     private final String code;
     private final String description;

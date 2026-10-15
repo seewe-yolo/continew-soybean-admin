@@ -33,6 +33,7 @@ description: 多端认证客户端的维护，包括 Token 有效期、Refresh T
 | `ACCOUNT` | 账号密码 | `AccountLoginHandler` |
 | `EMAIL` | 邮箱验证码 | `EmailLoginHandler` |
 | `PHONE` | 手机验证码 | `PhoneLoginHandler` |
+| `MINI_PROGRAM` | 微信小程序手机号授权 | `MiniProgramLoginHandler` |
 | `SOCIAL` | 第三方账号 | `SocialLoginHandler`（JustAuth） |
 
 初始化脚本预置一条 PC 客户端记录（`client_id` 为 `ef51c9a3e9046c4f2ea45142c8a8344a`，四种认证方式全开，活跃频率 1800 秒、有效期 86400 秒）。前端 `.env.development` 的 `VITE_CLIENT_ID` 与该 ID 对应，更换客户端 ID 时两端要同步。

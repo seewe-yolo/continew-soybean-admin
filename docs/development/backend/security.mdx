@@ -35,14 +35,17 @@ Refresh Token 的密钥来自独立环境变量 `REFRESH_TOKEN_SECRET`，配置�
 
 ## 登录处理器
 
-四种内置登录方式各占一个处理器，都继承 `AbstractLoginHandler<T extends LoginReq>`。
+五种内置登录方式各占一个处理器，都继承 `AbstractLoginHandler<T extends LoginReq>`。
 
 | 处理器 | 认证类型 | 说明 |
 |:-------|:---------|:-----|
 | `AccountLoginHandler` | `ACCOUNT` | 账号密码，前置校验图形验证码，按「系统配置 → 安全设置」的密码错误锁定策略（`PASSWORD_ERROR_LOCK_COUNT` / `PASSWORD_ERROR_LOCK_MINUTES`）计数锁定 |
 | `EmailLoginHandler` | `EMAIL` | 邮箱验证码 |
 | `PhoneLoginHandler` | `PHONE` | 手机验证码 |
+| `MiniProgramLoginHandler` | `MINI_PROGRAM` | 微信小程序手机号授权 |
 | `SocialLoginHandler` | `SOCIAL` | JustAuth 第三方（Gitee、GitHub、微信开放平台） |
+
+小程序端将 `wx.getPhoneNumber` 返回的一次性 `code` 与 `clientId`、`authType: "MINI_PROGRAM"` 提交到 `POST /auth/login`。后端使用「系统配置 → 登录配置」中的 AppID 和 AppSecret 获取 access token，再调用[微信手机号接口](https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-number/getPhoneNumber.html)换取手机号；access token 在进程内按 AppID 和密钥复用并在过期前刷新。首次登录会创建启用账号，归属根部门下的“外部部门”，分配“小程序用户”角色（仅本人数据权限，默认无管理端菜单权限）。客户端配置需允许 `MINI_PROGRAM`。
 
 `AuthController.login` 接收统一的 `LoginReq`，`AuthService` 按 `authType` 交给 `LoginHandlerFactory` 路由到对应处理器。每个处理器走 `preLogin`（参数校验、验证码）→ `login`（认证）→ `postLogin` 三段，`AbstractLoginHandler.authenticate` 把签发令牌的环节统一收口到 `AuthTokenService.issue`，任何登录方式都不会漏发 Refresh Token。
 
