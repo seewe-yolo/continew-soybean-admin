@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>top.continew.admin</groupId>
-        <artifactId>continew-admin</artifactId>
+        <artifactId>continew-soybean-admin</artifactId>
         <version>${revision}</version>
     </parent>
 
