@@ -32,6 +32,8 @@ import top.continew.admin.system.model.req.OptionReq;
 import top.continew.admin.system.model.req.OptionValueResetReq;
 import top.continew.admin.system.model.resp.OptionResp;
 import top.continew.admin.system.service.OptionService;
+import top.continew.starter.log.annotation.Log;
+import top.continew.starter.log.enums.Include;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -53,7 +55,7 @@ public class OptionController {
     @Operation(summary = "查询参数列表", description = "查询参数列表")
     @SaCheckPermission(
         value = {"system:siteConfig:get", "system:securityConfig:get", "system:loginConfig:get",
-            "system:mailConfig:get"},
+            "system:mailConfig:get", "system:thirdPartyConfig:get"},
         mode = SaMode.OR)
     @GetMapping
     public List<OptionResp> list(@Valid OptionQuery query) {
@@ -63,8 +65,9 @@ public class OptionController {
     @Operation(summary = "修改参数", description = "修改参数")
     @SaCheckPermission(value = {"system:siteConfig:update", "system:securityConfig:update",
         "system:loginConfig:update",
-        "system:mailConfig:update"}, mode = SaMode.OR)
+        "system:mailConfig:update", "system:thirdPartyConfig:update"}, mode = SaMode.OR)
     @PutMapping
+    @Log(excludes = Include.REQUEST_BODY)
     public void update(@RequestBody @Valid List<OptionReq> options) {
         baseService.update(options);
     }
@@ -72,7 +75,7 @@ public class OptionController {
     @Operation(summary = "重置参数", description = "重置参数")
     @SaCheckPermission(value = {"system:siteConfig:update", "system:securityConfig:update",
         "system:loginConfig:update",
-        "system:mailConfig:update"}, mode = SaMode.OR)
+        "system:mailConfig:update", "system:thirdPartyConfig:update"}, mode = SaMode.OR)
     @PatchMapping("/value")
     public void resetValue(@RequestBody @Valid OptionValueResetReq req) {
         baseService.resetValue(req);

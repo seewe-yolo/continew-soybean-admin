@@ -16,6 +16,7 @@
 
 package top.continew.admin.system.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.NumberUtil;
@@ -44,6 +45,7 @@ import top.continew.starter.data.util.QueryWrapperHelper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -58,16 +60,25 @@ import java.util.stream.Collectors;
 public class OptionServiceImpl implements OptionService {
 
     private static final String MINI_PROGRAM_APP_SECRET = "MINI_PROGRAM_APP_SECRET";
+    private static final String ALIYUN_OCR_ACCESS_KEY_SECRET = "ALIYUN_OCR_ACCESS_KEY_SECRET";
+    private static final String WECHAT_PAY_PRIVATE_KEY = "WECHAT_PAY_PRIVATE_KEY";
+    private static final String WECHAT_PAY_API_V3_KEY = "WECHAT_PAY_API_V3_KEY";
+
+    private static final List<String> SECRET_OPTION_CODES = List.of(MINI_PROGRAM_APP_SECRET,
+        ALIYUN_OCR_ACCESS_KEY_SECRET, WECHAT_PAY_PRIVATE_KEY, WECHAT_PAY_API_V3_KEY);
 
     private final OptionMapper baseMapper;
 
     @Override
     public List<OptionResp> list(OptionQuery query) {
-        List<OptionResp> options = BeanUtil.copyToList(
-            baseMapper.selectList(QueryWrapperHelper.build(query)), OptionResp.class);
-        options.stream()
-            .filter(option -> MINI_PROGRAM_APP_SECRET.equals(option.getCode()))
-            .forEach(option -> option.setValue(null));
+        List<OptionDO> records = baseMapper.selectList(QueryWrapperHelper.build(query));
+        checkThirdPartyPermission(records, "get");
+        List<OptionResp> options = BeanUtil.copyToList(records, OptionResp.class);
+        options.stream().filter(option -> SECRET_OPTION_CODES.contains(option.getCode()))
+            .forEach(option -> {
+                option.setValue(null);
+                option.setDefaultValue(null);
+            });
         return options;
     }
 
@@ -87,16 +98,19 @@ public class OptionServiceImpl implements OptionService {
         // 非空校验
         List<Long> idList = CollUtils.mapToList(options, OptionReq::getId);
         List<OptionDO> optionList = baseMapper.selectByIds(idList);
+        checkThirdPartyPermission(optionList, "update");
         Map<String, OptionDO> optionMap = optionList.stream()
             .collect(Collectors.toMap(OptionDO::getCode, Function.identity(),
                 (existing, replacement) -> existing));
         for (OptionReq req : options) {
             OptionDO option = optionMap.get(req.getCode());
             ValidationUtils.throwIfNull(option, "参数 [{}] 不存在", req.getCode());
+            ValidationUtils.throwIf(!Objects.equals(option.getId(), req.getId()), "参数 ID 与键不匹配");
             if (StrUtil.isNotBlank(option.getDefaultValue())) {
                 ValidationUtils.throwIfBlank(req.getValue(), "参数 [{}] 的值不能为空", option.getName());
             }
-            if (MINI_PROGRAM_APP_SECRET.equals(req.getCode()) && StrUtil.isBlank(req.getValue())) {
+            if (SECRET_OPTION_CODES.contains(req.getCode())
+                && StrUtil.isBlank(req.getValue())) {
                 req.setValue(option.getValue());
             }
         }
@@ -120,10 +134,16 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     public void resetValue(OptionValueResetReq req) {
-        RedisUtils.deleteByPattern(CacheConstants.OPTION_KEY_PREFIX + StringConstants.ASTERISK);
         String category = req.getCategory();
         List<String> codeList = req.getCode();
         ValidationUtils.throwIf(StrUtil.isBlank(category) && CollUtil.isEmpty(codeList), "键列表不能为空");
+        OptionQuery query = new OptionQuery();
+        query.setCategory(category);
+        if (StrUtil.isBlank(category)) {
+            query.setCode(codeList);
+        }
+        checkThirdPartyPermission(baseMapper.selectList(QueryWrapperHelper.build(query)), "update");
+        RedisUtils.deleteByPattern(CacheConstants.OPTION_KEY_PREFIX + StringConstants.ASTERISK);
         LambdaUpdateChainWrapper<OptionDO> updateWrapper =
             baseMapper.lambdaUpdate().set(OptionDO::getValue, null);
         if (StrUtil.isNotBlank(category)) {
@@ -132,6 +152,13 @@ public class OptionServiceImpl implements OptionService {
             updateWrapper.in(OptionDO::getCode, req.getCode());
         }
         updateWrapper.update();
+    }
+
+    private void checkThirdPartyPermission(List<OptionDO> options, String action) {
+        if (options.stream().anyMatch(option -> OptionCategoryEnum.THIRD_PARTY.name()
+            .equals(option.getCategory()))) {
+            StpUtil.checkPermission("system:thirdPartyConfig:" + action);
+        }
     }
 
     @Override

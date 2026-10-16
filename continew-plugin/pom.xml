@@ -20,6 +20,8 @@
         <module>continew-plugin-tenant</module>
         <module>continew-plugin-schedule</module>
         <module>continew-plugin-generator</module>
+        <module>continew-plugin-ocr</module>
+        <module>continew-plugin-wechat-pay</module>
     </modules>
 
     <dependencies>

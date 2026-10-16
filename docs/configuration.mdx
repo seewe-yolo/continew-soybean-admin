@@ -13,6 +13,14 @@ ContiNew Admin 后端的配置文件全部位于 `continew-server` 模块的 `sr
 | `application-prod.yml` | `PROFILES_ACTIVE=prod` | 生产环境，端口 18000，凭据无默认值 |
 | `application-generator.yml` | `spring.profiles.include: generator` 固定引入 | 代码生成器排除表与类型映射 |
 
+## 阿里云 OCR
+
+OCR 凭据和开关在「系统配置 -> 三方能力配置」中维护，参数保存在 `sys_option` 表。默认关闭；配置 AccessKey ID 和 Secret 后启用即可使用身份证、营业执照和发票识别。修改配置后会按新值重建 SDK 客户端，不需要重启后端。AccessKey Secret 不会由参数接口回显。
+
+## 微信支付 V3
+
+微信支付 V3 由 `continew-plugin-wechat-pay` 提供，依赖 WxJava Pay `4.8.6-20261010.094603`。商户 AppID、商户号、商户证书序列号、商户私钥、API v3 密钥、微信支付公钥与公钥 ID 和通知地址在「系统配置 -> 三方能力配置」的微信支付区域维护，配置保存在 `sys_option`。插件通过 `WechatPayApi` 提供普通商户公钥模式下的进程内下单、订单查询、关单以及通知验签解密能力，密钥字段不会由参数接口回显。
+
 <Callout type="info">
 以下各节按配置块说明键的含义与 admin 侧填的值。配置键本身的完整定义（全部可选项、类型、默认值）以 [ContiNew Starter 配置项参考](/docs/starter/reference/properties)为准。
 </Callout>

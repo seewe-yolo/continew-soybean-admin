@@ -43,4 +43,9 @@ public enum OptionCategoryEnum {
      * 登录配置
      */
     LOGIN,
+
+    /**
+     * 三方能力配置
+     */
+    THIRD_PARTY,
 }

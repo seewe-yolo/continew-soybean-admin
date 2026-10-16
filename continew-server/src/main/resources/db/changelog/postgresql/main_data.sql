@@ -270,3 +270,109 @@ SELECT 547888897925840932, 'LOGIN', '微信小程序 AppSecret', 'MINI_PROGRAM_A
 WHERE NOT EXISTS (
     SELECT 1 FROM "sys_option" WHERE "code" = 'MINI_PROGRAM_APP_SECRET'
 );
+
+-- changeset seewe-yolo:aliyun-ocr-option-menu dbms:postgresql
+-- comment 阿里云 OCR 配置及三方能力配置菜单
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840933, 'THIRD_PARTY', '是否启用阿里云 OCR', 'ALIYUN_OCR_ENABLED', NULL, '0',
+    '是否启用阿里云身份证、营业执照和发票识别能力'
+WHERE NOT EXISTS (
+    SELECT 1 FROM "sys_option" WHERE "code" = 'ALIYUN_OCR_ENABLED'
+);
+
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840934, 'THIRD_PARTY', '阿里云 AccessKey ID', 'ALIYUN_OCR_ACCESS_KEY_ID', NULL, NULL,
+    '阿里云 OCR 访问密钥 ID'
+WHERE NOT EXISTS (
+    SELECT 1 FROM "sys_option" WHERE "code" = 'ALIYUN_OCR_ACCESS_KEY_ID'
+);
+
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840935, 'THIRD_PARTY', '阿里云 AccessKey Secret', 'ALIYUN_OCR_ACCESS_KEY_SECRET', NULL,
+    NULL, '阿里云 OCR 访问密钥 Secret；接口不回显已保存密钥，留空保存不修改'
+WHERE NOT EXISTS (
+    SELECT 1 FROM "sys_option" WHERE "code" = 'ALIYUN_OCR_ACCESS_KEY_SECRET'
+);
+
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840936, 'THIRD_PARTY', '阿里云 OCR Endpoint', 'ALIYUN_OCR_ENDPOINT', NULL,
+    'ocr-api.cn-hangzhou.aliyuncs.com', '阿里云 OCR 服务地址'
+WHERE NOT EXISTS (
+    SELECT 1 FROM "sys_option" WHERE "code" = 'ALIYUN_OCR_ENDPOINT'
+);
+
+INSERT INTO "sys_menu"
+("id", "title", "parent_id", "type", "path", "name", "component", "redirect", "icon", "is_external",
+ "is_cache", "is_hidden", "permission", "sort", "status", "create_user", "create_time")
+SELECT 1260, '三方能力配置', 1150, 2, '/system/config/thirdparty', 'SystemThirdPartyConfig',
+    'system/config/thirdparty/index', NULL, 'mdi:cloud-cog-outline', false, false, true, NULL, 8, 1, 1, NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM "sys_menu" WHERE "id" = 1260 OR ("title" = '三方能力配置' AND "parent_id" = 1150 AND "deleted" = 0)
+);
+
+INSERT INTO "sys_menu"
+("id", "title", "parent_id", "type", "path", "name", "component", "redirect", "icon", "is_external",
+ "is_cache", "is_hidden", "permission", "sort", "status", "create_user", "create_time")
+SELECT 1261, '查询', 1260, 3, NULL, NULL, NULL, NULL, NULL, false, false, false,
+    'system:thirdPartyConfig:get', 1, 1, 1, NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM "sys_menu" WHERE "id" = 1261 OR ("parent_id" = 1260
+        AND "permission" = 'system:thirdPartyConfig:get' AND "deleted" = 0)
+);
+
+INSERT INTO "sys_menu"
+("id", "title", "parent_id", "type", "path", "name", "component", "redirect", "icon", "is_external",
+ "is_cache", "is_hidden", "permission", "sort", "status", "create_user", "create_time")
+SELECT 1262, '修改', 1260, 3, NULL, NULL, NULL, NULL, NULL, false, false, false,
+    'system:thirdPartyConfig:update', 2, 1, 1, NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM "sys_menu" WHERE "id" = 1262 OR ("parent_id" = 1260
+        AND "permission" = 'system:thirdPartyConfig:update' AND "deleted" = 0)
+);
+
+-- changeset seewe-yolo:wechat-pay-option dbms:postgresql
+-- comment 微信支付 V3 配置
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840937, 'THIRD_PARTY', '是否启用微信支付', 'WECHAT_PAY_ENABLED', NULL, '0',
+    '是否启用微信支付 V3 能力'
+WHERE NOT EXISTS (SELECT 1 FROM "sys_option" WHERE "code" = 'WECHAT_PAY_ENABLED');
+
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840938, 'THIRD_PARTY', '微信支付 AppID', 'WECHAT_PAY_APP_ID', NULL, NULL,
+    '微信支付所使用的公众号或小程序 AppID'
+WHERE NOT EXISTS (SELECT 1 FROM "sys_option" WHERE "code" = 'WECHAT_PAY_APP_ID');
+
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840939, 'THIRD_PARTY', '微信支付商户号', 'WECHAT_PAY_MCH_ID', NULL, NULL,
+    '微信支付商户号'
+WHERE NOT EXISTS (SELECT 1 FROM "sys_option" WHERE "code" = 'WECHAT_PAY_MCH_ID');
+
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840940, 'THIRD_PARTY', '微信支付商户证书序列号', 'WECHAT_PAY_MCH_SERIAL_NO', NULL, NULL,
+    '商户 API 证书序列号，与商户私钥配套；不是微信支付平台证书序列号'
+WHERE NOT EXISTS (SELECT 1 FROM "sys_option" WHERE "code" = 'WECHAT_PAY_MCH_SERIAL_NO');
+
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840941, 'THIRD_PARTY', '微信支付商户私钥', 'WECHAT_PAY_PRIVATE_KEY', NULL, NULL,
+    'apiclient_key.pem 内容；接口不回显已保存私钥，留空保存不修改'
+WHERE NOT EXISTS (SELECT 1 FROM "sys_option" WHERE "code" = 'WECHAT_PAY_PRIVATE_KEY');
+
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840942, 'THIRD_PARTY', '微信支付 API v3 密钥', 'WECHAT_PAY_API_V3_KEY', NULL, NULL,
+    '微信支付 API v3 密钥；接口不回显已保存密钥，留空保存不修改'
+WHERE NOT EXISTS (SELECT 1 FROM "sys_option" WHERE "code" = 'WECHAT_PAY_API_V3_KEY');
+
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840943, 'THIRD_PARTY', '微信支付通知地址', 'WECHAT_PAY_NOTIFY_URL', NULL, NULL,
+    '微信支付 V3 支付结果通知地址，必须为外网可访问的 HTTPS 地址'
+WHERE NOT EXISTS (SELECT 1 FROM "sys_option" WHERE "code" = 'WECHAT_PAY_NOTIFY_URL');
+
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840944, 'THIRD_PARTY', '微信支付公钥 ID', 'WECHAT_PAY_PUBLIC_KEY_ID', NULL, NULL,
+    '微信支付商户平台下载的微信支付公钥 ID，以 PUB_KEY_ID_ 开头'
+WHERE NOT EXISTS (SELECT 1 FROM "sys_option" WHERE "code" = 'WECHAT_PAY_PUBLIC_KEY_ID');
+
+INSERT INTO "sys_option" ("id", "category", "name", "code", "value", "default_value", "description")
+SELECT 547888897925840945, 'THIRD_PARTY', '微信支付公钥', 'WECHAT_PAY_PUBLIC_KEY', NULL, NULL,
+    '微信支付平台公钥 PEM 原文，用于响应及通知验签；不是商户公钥'
+WHERE NOT EXISTS (SELECT 1 FROM "sys_option" WHERE "code" = 'WECHAT_PAY_PUBLIC_KEY');

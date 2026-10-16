@@ -47,6 +47,18 @@
             <artifactId>continew-plugin-generator</artifactId>
         </dependency>
 
+        <!-- 阿里云 OCR 插件 -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>continew-plugin-ocr</artifactId>
+        </dependency>
+
+        <!-- 微信支付插件 -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>continew-plugin-wechat-pay</artifactId>
+        </dependency>
+
         <!-- ContiNew Starter 链路追踪模块 -->
         <dependency>
             <groupId>top.continew.starter</groupId>
